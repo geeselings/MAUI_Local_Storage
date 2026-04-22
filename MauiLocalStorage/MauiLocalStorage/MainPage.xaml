@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiLocalStorage.MainPage"
+             xmlns:models="clr-namespace:MauiLocalStorage.Models">
+    <ScrollView>
+        <VerticalStackLayout
+            Padding="30,0"
+            Spacing="25">
+
+            <Label
+                Text="Samantha - Local Storage"
+                Style="{StaticResource Headline}"
+                SemanticProperties.HeadingLevel="Level1" />
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Label
+                    Text="First Name"
+                    Style="{StaticResource Headline}"
+                    SemanticProperties.HeadingLevel="Level2"
+                    Grid.Column="0"
+                    Grid.Row="0"
+                    VerticalTextAlignment="Center"/>
+
+                <Entry
+                    Placeholder="Enter your first name"
+                    x:Name="txtFirstName"
+                    Grid.Column="1"
+                    Grid.Row="0"/>
+
+                <Label
+                    Text="Last Name"
+                    Style="{StaticResource Headline}"
+                    SemanticProperties.HeadingLevel="Level2"
+                    Grid.Column="0"
+                    Grid.Row="1"
+                    VerticalTextAlignment="Center" />
+
+                <Entry
+                    Placeholder="Enter your last name"
+                    x:Name="txtLastName"
+                    Grid.Column="1"
+                    Grid.Row="1" />
+
+                <Label
+                    Text="Date of Birth"
+                    Style="{StaticResource Headline}"
+                    SemanticProperties.HeadingLevel="Level2"
+                    Grid.Column="0"
+                    Grid.Row="2"
+                    VerticalTextAlignment="Center" />
+
+                <DatePicker
+                    x:Name="dpDateOfBirth"
+                    Grid.Column="1"
+                    Grid.Row="2"
+                    Format="MM-dd-yyyy" />
+            </Grid>
+
+            <Button
+                Text="Save Person"
+                x:Name="btnSave"
+                Clicked="OnSaveClicked"
+                HorizontalOptions="Center" />
+
+            <CollectionView
+                VerticalOptions="Fill"
+                ItemsSource="{Binding People}"
+                SelectionMode="Single">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Person">
+                        <Grid
+                            Padding="20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Label
+                                Text="{Binding FirstName}"
+                                VerticalTextAlignment="Center"
+                                Grid.Column="0"/>
+                            <Label
+                                Text="{Binding LastName}"
+                                VerticalTextAlignment="Center"
+                                Grid.Column="1" />
+                            <Label
+                                Text="{Binding DoB, StringFormat='{0:MM-dd-yyyy}'}"
+                                VerticalTextAlignment="Center"
+                                Grid.Column="2" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+                
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
