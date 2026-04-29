@@ -1,51 +1,62 @@
 ﻿using SQLite;
 using MauiLocalStorage.Models;
+using Newtonsoft.Json;
 
 namespace MauiLocalStorage.DataAccess
 {
     public class PersonData
     {
-        SQLiteAsyncConnection database;
-
-        async Task InitializeDatabase()
-        {
-            if (database is not null)
-            {
-                return;
-            }
-            database = new SQLiteAsyncConnection(DatabaseConstants.DatabasePath, DatabaseConstants.Flags);
-            await database.CreateTableAsync<Person>();
-        }
 
         public async Task<List<Person>> GetPeopleAsync()
         {
-            await InitializeDatabase();
-            return await database.Table<Person>().ToListAsync();
-        }
+            HttpClient client;
 
-        public async Task<Person> GetPersonAsync(int id)
-        {
-            await InitializeDatabase();
-            return await database.Table<Person>().Where(i => i.ID == id).FirstOrDefaultAsync();
-        }
-
-        public async Task SavePersonAsync(Person person)
-        {
-            await InitializeDatabase();
-            if (person.ID != 0)
+            try
             {
-                await database.UpdateAsync(person);
+                client = new HttpClient();
+                client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/json");
+                List<Person> people = new List<Person>();
+
+                var response = await client.GetAsync("http://localhost:24565/api/Person");
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = response.Content.ReadAsStringAsync().Result;
+
+                    if (!String.IsNullOrEmpty(content))
+                    {
+                        people = JsonConvert.DeserializeObject<List<Person>>(content);
+                    }
+                }
+                return people;
             }
-            else
+            catch (Exception ex)
             {
-                await database.InsertAsync(person);
+                throw ex;
             }
         }
 
-        public async Task DeletePersonAsync(Person person)
+        public async Task<int> SavePersonAsync(Person person)
         {
-            await InitializeDatabase();
-            await database.DeleteAsync(person);
+            HttpClient client;
+
+            try
+            {
+                client = new HttpClient();
+
+                client.DefaultRequestHeaders.TryAddWithoutValidation("Accpet", "application/json");
+
+                var content = JsonConvert.SerializeObject(person);
+                var buff = System.Text.Encoding.UTF8.GetBytes(content);
+                var byteContent = new ByteArrayContent(buff);
+                byteContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+
+                HttpResponseMessage response = client.PostAsync("http://localhost:24565/api/Person", byteContent).Result;
+                return response.IsSuccessStatusCode ? 1 : 0;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }
